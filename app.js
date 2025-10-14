@@ -1,4 +1,4 @@
-// ===================== app.js (white labels + improved routing + Kenya auto-focus) =====================
+// ===================== app.js (responsive drawer + white labels + OSRM + Kenya auto-focus) =====================
 
 // ---- 1) DATA (puedes sustituir por tu bloque del PDF si lo prefieres) ----
 const resourceData = {
@@ -201,6 +201,7 @@ function stageLabel(s){
   if(c==='T') return 'Transport/Export';
   return s;
 }
+function isMobile(){ return window.matchMedia('(max-width: 900px)').matches; }
 
 // ---- 4) PORT COORDS (representative port per export country) ----
 const PORT_COORDS = {
@@ -248,21 +249,24 @@ async function loadAfrica(){
       const name = feature.properties.name || feature.properties.ADMIN || feature.properties.NAME;
       const rd = lookupCountry(name);
       const fill = rd ? stageColor(rd.dominant) : '#475569';
-      return { color:'#0f172a', weight:0.7, fillColor:fill, fillOpacity:0.75 };
+      return { color:'#0f172a', weight:1, fillColor:fill, fillOpacity:0.8 };
     },
     onEachFeature: (feature, layer)=>{
       const name = feature.properties.name || feature.properties.ADMIN || feature.properties.NAME;
       const display = normalizeName(name);
       countryLayers.set(display, layer);
-      layer.on('click',()=>renderSidebar(display, layer));
+      layer.on('click',()=>{
+        renderSidebar(display, layer);
+        if(isMobile()) openSidebar();    // auto-abrir panel en móvil
+      });
       layer.on('mouseover',()=> layer.setStyle({weight:1.4}));
-      layer.on('mouseout',()=> layer.setStyle({weight:0.7}));
+      layer.on('mouseout',()=> layer.setStyle({weight:1}));
     }
   }).addTo(map);
 
   map.fitBounds(africaLayer.getBounds(),{padding:[20,20]});
 
-  // Fill selectors and country picker
+  // Fill selectors y picker
   populateSelectors();
   const picker = document.getElementById('countryPicker');
   const names = feats.map(f=>normalizeName(f.properties.name || f.properties.ADMIN || f.properties.NAME)).sort();
@@ -270,15 +274,23 @@ async function loadAfrica(){
   picker.addEventListener('change', e=>{
     const name = e.target.value; if(!name) return;
     const layer = countryLayers.get(name);
-    if(layer){ map.fitBounds(layer.getBounds(), {padding:[20,20]}); renderSidebar(name, layer); }
+    if(layer){
+      map.fitBounds(layer.getBounds(), {padding:[20,20]});
+      renderSidebar(name, layer);
+      if(isMobile()) openSidebar();
+    }
   });
 
-  // ✅ Auto-focus en Kenya al cargar (zoom + panel abierto)
+  // ✅ Auto-focus en Kenya (zoom + panel)
   const kenyaLayer = countryLayers.get('Kenya');
   if (kenyaLayer) {
     map.fitBounds(kenyaLayer.getBounds(), { padding:[20,20] });
     renderSidebar('Kenya', kenyaLayer);
+    if(isMobile()) openSidebar();
   }
+
+  // invalidateSize cuando cambia el layout
+  window.addEventListener('resize', debounce(()=> map.invalidateSize(), 150));
 }
 
 function fallbackMarkers(){
@@ -287,7 +299,10 @@ function fallbackMarkers(){
     'Democratic Republic of the Congo':[-2.88,23.65],'Morocco':[31.8,-7.09],'Egypt':[26.8,30.8]
   };
   for(const [name, latlng] of Object.entries(markers)){
-    L.marker(latlng).addTo(map).bindTooltip(name).on('click',()=>renderSidebar(name));
+    L.marker(latlng).addTo(map).bindTooltip(name).on('click',()=>{
+      renderSidebar(name);
+      if(isMobile()) openSidebar();
+    });
   }
   populateSelectors();
 }
@@ -295,7 +310,7 @@ function fallbackMarkers(){
 // ---- 7) SIDEBAR ----
 function renderSidebar(name, layer){
   const info = lookupCountry(name);
-  const el = document.getElementById('sidebar');
+  const el = document.querySelector('#sidebar .panel-body');
   const center = layer? layer.getBounds().getCenter(): null;
   const resList = info? info.resources.map(r=>{
     const label = stageLabel(r.stage);
@@ -335,11 +350,9 @@ async function drawRouteReal(aName, bName, cCountry, resource){
 
   const color = categoryColor(resource);
 
-  // Segment 1: A -> B via OSRM (fallback straight)
   const r1 = await osrmRoute(A,B);
   const pl1 = L.polyline(r1.coords,{color,weight:4,opacity:0.9}).addTo(map);
 
-  // Segment 2: B -> C via OSRM (fallback straight), dashed
   const r2 = await osrmRoute(B,C);
   const pl2 = L.polyline(r2.coords,{color,weight:4,opacity:0.9,dashArray:'6 6'}).addTo(map);
 
@@ -347,8 +360,7 @@ async function drawRouteReal(aName, bName, cCountry, resource){
 
   const km = Math.round(r1.km + r2.km);
 
-  // Cost model (heuristic)
-  const base = 0.12; // USD per t/km (fictional baseline)
+  const base = 0.12; // USD per t/km (heurístico)
   const processFactor = capabilities.processing.has(bName) ? 0.9 : 1.1;
   const portFactor = capabilities.portsStrong.has(cCountry) ? 0.85 : 1.05;
   const cost = Math.round((km*base*processFactor*portFactor)*100)/100;
@@ -359,7 +371,7 @@ async function drawRouteReal(aName, bName, cCountry, resource){
 function clearRoutes(){ drawn.splice(0).forEach(l=> map.removeLayer(l)); }
 
 function showRouteCard({resource,from,process,exportTo,metrics}){
-  const el = document.getElementById('sidebar');
+  const el = document.querySelector('#sidebar .panel-body');
   const gaps = [];
   if(!capabilities.processing.has(process)) gaps.push('⚙️ Limited processing capacity');
   if(!capabilities.portsStrong.has(exportTo)) gaps.push('⚓ Port infrastructure to reinforce');
@@ -374,9 +386,10 @@ function showRouteCard({resource,from,process,exportTo,metrics}){
       ${gaps.length? `<div class="divider"></div><div class="small">Gaps: <ul>${gaps.map(g=>`<li>${g}</li>`).join('')}</ul></div>`: ''}
     </div>`;
   el.insertAdjacentHTML('afterbegin', html);
+  if(isMobile()) openSidebar(); // asegúrate de ver el resultado en móvil
 }
 
-// ---- 9) UI EVENTS ----
+// ---- 9) UI EVENTS + Drawer logic ----
 document.getElementById('btnMatch').addEventListener('click', async ()=>{
   const btn = document.getElementById('btnMatch');
   const r = document.getElementById('matchResource').value;
@@ -411,7 +424,7 @@ document.getElementById('btnAuto').addEventListener('click', async ()=>{
 });
 
 document.getElementById('btnLimpiar').addEventListener('click', ()=>{
-  clearRoutes(); document.getElementById('sidebar').innerHTML = '<div class="subtle">Click a country to view details…</div>';
+  clearRoutes(); document.querySelector('#sidebar .panel-body').innerHTML = '<div class="subtle">Click a country to view details…</div>';
 });
 
 document.getElementById('search').addEventListener('keyup', (e)=>{
@@ -421,7 +434,11 @@ document.getElementById('search').addEventListener('keyup', (e)=>{
                  || Object.keys(resourceData).find(n => n.toLowerCase().includes(q.toLowerCase()));
     if(name){
       const layer = countryLayers.get(name);
-      if(layer && layer.getBounds){ map.fitBounds(layer.getBounds(), {padding:[20,20]}); renderSidebar(name, layer); }
+      if(layer && layer.getBounds){
+        map.fitBounds(layer.getBounds(), {padding:[20,20]});
+        renderSidebar(name, layer);
+        if(isMobile()) openSidebar();
+      }
     }
   }
 });
@@ -433,9 +450,32 @@ document.getElementById('colorMode').addEventListener('change', (e)=>{
     const name = feat.properties.name || feat.properties.ADMIN || feat.properties.NAME;
     const rd = lookupCountry(name);
     const fill = rd ? (mode==='stage'? stageColor(rd.dominant) : regionColor(rd.region)) : '#475569';
-    return { color:'#0f172a', weight:0.7, fillColor:fill, fillOpacity:0.75 };
+    return { color:'#0f172a', weight:1, fillColor:fill, fillOpacity:0.8 };
   });
 });
+
+// Drawer controls
+const drawer = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('toggleSidebar');
+toggleBtn.addEventListener('click', ()=>{
+  if(drawer.classList.contains('open')) closeSidebar(); else openSidebar();
+});
+
+function openSidebar(){
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+  toggleBtn.setAttribute('aria-expanded','true');
+  setTimeout(()=> map.invalidateSize(), 250);
+}
+function closeSidebar(){
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden','true');
+  toggleBtn.setAttribute('aria-expanded','false');
+  setTimeout(()=> map.invalidateSize(), 250);
+}
+
+// Util: debounce
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
 
 // ---- 10) INIT ----
 loadAfrica();

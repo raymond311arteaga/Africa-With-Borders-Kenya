@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Africa With Borders Kenya — Interactive Value Chains</title>
 
   <!-- Leaflet CSS -->
@@ -19,15 +19,16 @@
 <body>
   <header>
     <div class="title">
+      <button id="toggleSidebar" aria-controls="sidebar" aria-expanded="false" title="Open panel">☰</button>
       <span>🗺️</span>
       <span>Africa With Borders Kenya — Interactive Value Chains</span>
     </div>
     <div class="row header-controls">
-      <select id="countryPicker">
+      <select id="countryPicker" aria-label="Pick a country">
         <option value="">Pick a country…</option>
       </select>
-      <input id="search" placeholder="Search country… (e.g., Nigeria)" />
-      <select id="colorMode">
+      <input id="search" placeholder="Search country… (e.g., Nigeria)" aria-label="Search country"/>
+      <select id="colorMode" aria-label="Color mode">
         <option value="stage">Color by dominant stage</option>
         <option value="region">Color by subregion</option>
       </select>
@@ -35,9 +36,9 @@
   </header>
 
   <div id="app">
-    <div id="map"></div>
+    <div id="map" role="application" aria-label="Interactive map of Africa"></div>
 
-    <aside>
+    <aside id="sidebar" aria-label="Information panel" aria-hidden="true">
       <div class="panel">
         <div class="legend">
           <div class="item"><span class="dot E"></span> Extraction</div>
@@ -53,10 +54,10 @@
 
       <div class="panel">
         <div class="row">
-          <select id="matchResource"></select>
-          <select id="matchFrom"></select>
-          <select id="matchProcess"></select>
-          <select id="matchExport"></select>
+          <select id="matchResource" aria-label="Resource"></select>
+          <select id="matchFrom" aria-label="From country"></select>
+          <select id="matchProcess" aria-label="Processing country"></select>
+          <select id="matchExport" aria-label="Export country"></select>
           <button id="btnMatch" class="primary">Generate Match</button>
         </div>
         <div class="row" style="margin-top:6px">
@@ -65,7 +66,7 @@
         </div>
       </div>
 
-      <div class="panel scroll" id="sidebar">
+      <div class="panel scroll panel-body">
         <div class="subtle">Click a country to view details…</div>
       </div>
 
