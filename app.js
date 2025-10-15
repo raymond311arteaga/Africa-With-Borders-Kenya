@@ -1,122 +1,183 @@
-// ===================== app.js (responsive drawer + white labels + OSRM + Kenya auto-focus) =====================
+// ===================== app.js (Auto-Match + dataset ampliado + responsive drawer + OSRM + Kenya auto-focus) =====================
 
-// ---- 1) DATA (puedes sustituir por tu bloque del PDF si lo prefieres) ----
+// ---- 1) DATA (ampliado con tus ejemplos) ----
+// Stages: E=Extraction, P=Processing, T=Transport/Export
 const resourceData = {
-  "Nigeria": { region: "West Africa", dominant:"E", resources:[
-    {name:"Crude oil", stage:"E", notes:"Main FX source"},
-    {name:"Liquefied natural gas", stage:"P", notes:"Limited capacity"},
-    {name:"Refined products", stage:"T", notes:"Imported then re-exported"}
-  ], reserves:"High (oil/gas)", production:"~1.3–1.5 Mbpd" },
+  "Democratic Republic of the Congo": { region:"Central Africa", dominant:"E", resources:[
+    {name:"Cobalt", stage:"E/P (limited)", notes:"~68.8% of world cobalt (2019, USGS)"},
+    {name:"Copper", stage:"E"},
+    {name:"Gold", stage:"E"},
+    {name:"Coltan/Tantalum", stage:"E"}
+  ]},
+  "South Africa": { region:"Southern Africa", dominant:"P", resources:[
+    {name:"Chromium", stage:"E/P", notes:"~39.6% of world chromium (2019, USGS)"},
+    {name:"PGMs", stage:"E/P"},
+    {name:"Gold", stage:"E"},
+    {name:"Thermal coal", stage:"E/P"},
+    {name:"Automotive", stage:"P/T"}
+  ]},
+  "Namibia": { region:"Southern Africa", dominant:"E", resources:[
+    {name:"Uranium", stage:"E", notes:"~10% world share (2019 region, USGS)"},
+    {name:"Copper", stage:"E"},
+    {name:"Fisheries", stage:"E/T"}
+  ]},
+  "Niger": { region:"West Africa", dominant:"E", resources:[
+    {name:"Uranium", stage:"E", notes:"~5.5% world share (2019 region, USGS)"},
+    {name:"Gold", stage:"E"},
+    {name:"Livestock/hides", stage:"E/T"}
+  ]},
+  "Mozambique": { region:"Southern Africa", dominant:"P", resources:[
+    {name:"Graphite", stage:"E/P (emerging)", notes:"Battery supply chain projects"},
+    {name:"Aluminium (Mozal)", stage:"P"},
+    {name:"Coal", stage:"E"},
+    {name:"LNG", stage:"P/T"}
+  ]},
+  "Zimbabwe": { region:"Southern Africa", dominant:"E", resources:[
+    {name:"Lithium", stage:"E/P (emerging)", notes:"Battery chain potential"},
+    {name:"Gold", stage:"E"},
+    {name:"Diamonds", stage:"E"},
+    {name:"PGMs", stage:"E"}
+  ]},
+  "Tanzania": { region:"Horn/East Africa", dominant:"E", resources:[
+    {name:"Rare earths", stage:"E (emerging)"},
+    {name:"Gold", stage:"E"},
+    {name:"Cashew", stage:"E/P (limited)"},
+    {name:"Tobacco", stage:"E"},
+    {name:"Coal", stage:"E"}
+  ]},
+  "Zambia": { region:"Southern Africa", dominant:"P", resources:[
+    {name:"Copper", stage:"E/P", notes:"~763k t (2022); ~70% exports from mining"},
+    {name:"Cobalt", stage:"E"}
+  ]},
   "Ghana": { region:"West Africa", dominant:"E", resources:[
-    {name:"Gold", stage:"E"},{name:"Cocoa", stage:"E/P (limited)"},{name:"Crude", stage:"E"}
-  ] },
+    {name:"Gold", stage:"E"},
+    {name:"Cocoa", stage:"E/P (limited)"},
+    {name:"Crude", stage:"E"}
+  ]},
   "Côte d’Ivoire": { region:"West Africa", dominant:"P", resources:[
     {name:"Cocoa", stage:"P", notes:"Largest cocoa processor in Africa"},
-    {name:"Gold", stage:"E"},{name:"Crude", stage:"E"}
-  ] },
+    {name:"Gold", stage:"E"},
+    {name:"Crude", stage:"E"}
+  ]},
   "Guinea": { region:"West Africa", dominant:"E", resources:[
-    {name:"Bauxite", stage:"E", notes:">7.4 Bt reserves"}, {name:"Gold", stage:"E"}, {name:"Iron", stage:"E"}
-  ] },
+    {name:"Bauxite", stage:"E", notes:">7.4 Bt reserves"},
+    {name:"Gold", stage:"E"},
+    {name:"Iron", stage:"E"}
+  ]},
   "Senegal": { region:"West Africa", dominant:"E", resources:[
-    {name:"Gold", stage:"E"}, {name:"Phosphates", stage:"E/P"}, {name:"Fisheries", stage:"E"}
-  ] },
-  "Niger": { region:"West Africa", dominant:"E", resources:[
-    {name:"Uranium", stage:"E"},{name:"Gold", stage:"E"},{name:"Livestock/hides", stage:"E/T"}
-  ] },
+    {name:"Gold", stage:"E"},
+    {name:"Phosphates", stage:"E/P"},
+    {name:"Fisheries", stage:"E"}
+  ]},
   "Cameroon": { region:"Central Africa", dominant:"E", resources:[
-    {name:"Crude", stage:"E"},{name:"Gas", stage:"E"},{name:"Cocoa", stage:"E/P (limited)"},{name:"Timber", stage:"E/T"}
-  ] },
+    {name:"Crude", stage:"E"},
+    {name:"Gas", stage:"E"},
+    {name:"Cocoa", stage:"E/P (limited)"},
+    {name:"Timber", stage:"E/T"}
+  ]},
   "Gabon": { region:"Central Africa", dominant:"E", resources:[
-    {name:"Crude", stage:"E"},{name:"Manganese", stage:"E"},{name:"Timber", stage:"E/T"}
-  ] },
-  "Democratic Republic of the Congo": { region:"Central Africa", dominant:"E", resources:[
-    {name:"Copper", stage:"E"},{name:"Cobalt", stage:"E/P (limited cathodes)"},{name:"Gold", stage:"E"},{name:"Coltan/tantalum", stage:"E"}
-  ] },
+    {name:"Crude", stage:"E"},
+    {name:"Manganese", stage:"E"},
+    {name:"Timber", stage:"E/T"}
+  ]},
   "Angola": { region:"Central Africa", dominant:"E", resources:[
-    {name:"Crude", stage:"E"},{name:"Diamonds", stage:"E"},{name:"Gas", stage:"E/P (limited)"}
-  ] },
-  "South Africa": { region:"Southern Africa", dominant:"P", resources:[
-    {name:"PGMs", stage:"E/P", notes:"Smelters/refineries"}, {name:"Gold", stage:"E"},
-    {name:"Thermal coal", stage:"E/P"}, {name:"Automotive", stage:"P/T"}
-  ] },
-  "Botswana": { region:"Southern Africa", dominant:"P", resources:[
-    {name:"Diamonds", stage:"E/P", notes:"Leader in cutting/polishing"},{name:"Cattle", stage:"E"}
-  ] },
-  "Namibia": { region:"Southern Africa", dominant:"E", resources:[
-    {name:"Copper", stage:"E"},{name:"Uranium", stage:"E"},{name:"Fisheries", stage:"E/T"}
-  ] },
-  "Zambia": { region:"Southern Africa", dominant:"P", resources:[
-    {name:"Copper", stage:"E/P", notes:"Smelters/refineries"},{name:"Cobalt", stage:"E"}
-  ] },
-  "Mozambique": { region:"Southern Africa", dominant:"P", resources:[
-    {name:"Aluminium (Mozal)", stage:"P", notes:"Uses imported bauxite"},{name:"Coal", stage:"E"},{name:"LNG", stage:"P/T"}
-  ] },
-  "Zimbabwe": { region:"Southern Africa", dominant:"E", resources:[
-    {name:"Gold", stage:"E"},{name:"Diamonds", stage:"E"},{name:"PGMs", stage:"E"}
-  ] },
-  "Ethiopia": { region:"Horn/East Africa", dominant:"E", resources:[
-    {name:"Coffee", stage:"E/P (light roast)"},{name:"Gold", stage:"E"},{name:"Oilseeds", stage:"E"}
-  ] },
-  "Uganda": { region:"Horn/East Africa", dominant:"E", resources:[
-    {name:"Gold", stage:"E"},{name:"Coffee", stage:"E/P (limited)"},{name:"Tea", stage:"E"}
-  ] },
-  "Kenya": { region:"Horn/East Africa", dominant:"T", resources:[
-    {name:"Tea", stage:"E/P (limited)"},{name:"Cut flowers", stage:"E/T", notes:"Floriculture hub"},
-    {name:"Coffee", stage:"E/P (limited)"},{name:"Mineral sands", stage:"E"}
-  ] },
-  "Tanzania": { region:"Horn/East Africa", dominant:"E", resources:[
-    {name:"Gold", stage:"E"},{name:"Cashew", stage:"E/P (limited)"},{name:"Tobacco", stage:"E"},{name:"Coal", stage:"E"}
-  ] },
+    {name:"Crude", stage:"E"},
+    {name:"Diamonds", stage:"E"},
+    {name:"Gas", stage:"E/P (limited)"}
+  ]},
   "Egypt": { region:"North Africa", dominant:"P", resources:[
-    {name:"LNG", stage:"P"},{name:"Crude", stage:"E"},{name:"Gold", stage:"E"},{name:"Phosphate fertilizers", stage:"P"}
-  ] },
+    {name:"LNG", stage:"P"},
+    {name:"Crude", stage:"E"},
+    {name:"Gold", stage:"E"},
+    {name:"Phosphate fertilizers", stage:"P"}
+  ]},
   "Algeria": { region:"North Africa", dominant:"P", resources:[
-    {name:"Natural gas", stage:"E/P", notes:"Pipelines & LNG"},{name:"Crude", stage:"E"},{name:"N/P fertilizers", stage:"P"}
-  ] },
+    {name:"Natural gas", stage:"E/P"},
+    {name:"Crude", stage:"E"},
+    {name:"N/P fertilizers", stage:"P"}
+  ]},
   "Libya": { region:"North Africa", dominant:"E", resources:[
-    {name:"Crude", stage:"E"},{name:"Gas", stage:"E (little processing)"}
-  ] },
+    {name:"Crude", stage:"E"},
+    {name:"Gas", stage:"E (little processing)"}
+  ]},
   "Morocco": { region:"North Africa", dominant:"P", resources:[
-    {name:"Phosphates", stage:"E/P", notes:"Strong downstream (acid/fertilizers)"},
-    {name:"Automotive (assembly)", stage:"P (advanced)"},{name:"Fruits/vegetables", stage:"E"}
-  ] }
+    {name:"Phosphates", stage:"E/P", notes:"Downstream (acid/fertilizers)"},
+    {name:"Automotive (assembly)", stage:"P (advanced)"},
+    {name:"Fruits/vegetables", stage:"E"}
+  ]},
+  "Nigeria": { region: "West Africa", dominant:"E", resources:[
+    {name:"Crude oil", stage:"E"},
+    {name:"Liquefied natural gas", stage:"P (limited)"},
+    {name:"Refined products", stage:"T"}
+  ], reserves:"High (oil/gas)"},
+  "Ethiopia": { region:"Horn/East Africa", dominant:"E", resources:[
+    {name:"Coffee", stage:"E/P (light roast)"},
+    {name:"Gold", stage:"E"},
+    {name:"Oilseeds", stage:"E"}
+  ]},
+  "Uganda": { region:"Horn/East Africa", dominant:"E", resources:[
+    {name:"Gold", stage:"E"},
+    {name:"Coffee", stage:"E/P (limited)"},
+    {name:"Tea", stage:"E"}
+  ]},
+  "Kenya": { region:"Horn/East Africa", dominant:"T", resources:[
+    {name:"Tea", stage:"E/P (limited)"},
+    {name:"Cut flowers", stage:"E/T", notes:"Floriculture hub"},
+    {name:"Coffee", stage:"E/P (limited)"},
+    {name:"Mineral sands", stage:"E"}
+  ]},
+  // Añadidos del PDF que faltaban en el dataset previo:
+  "Mali": { region:"West Africa", dominant:"E", resources:[
+    {name:"Gold", stage:"E", notes:"Top export earner"},
+    {name:"Cotton", stage:"E"},
+    {name:"Salt", stage:"E"}
+  ]},
+  "Sudan": { region:"North/East Africa", dominant:"E", resources:[
+    {name:"Gold", stage:"E", notes:"Often refined/exported via SA/Egypt in example chains"}
+  ]}
 };
 
+// Capacidades (heurísticas)
 const capabilities = {
-  processing: new Set(["South Africa","Zambia","Morocco","Egypt","Algeria","Mozambique","Botswana"]),
-  refineriesOil: new Set(["Egypt","South Africa","Morocco","Algeria"]),
-  batteryChem: new Set(["Morocco","South Africa"]),
-  portsStrong: new Set(["South Africa","Morocco","Mozambique","Kenya","Namibia","Egypt","Tanzania","Senegal"])
+  // Países con industria de procesamiento diversificada
+  processing: new Set(["South Africa","Zambia","Morocco","Egypt","Algeria","Mozambique","Botswana","Côte d’Ivoire","Ghana"]),
+  // Refinerías de petróleo/derivados destacables
+  refineriesOil: new Set(["Egypt","South Africa","Morocco","Algeria","Nigeria"]),
+  // Químicos de baterías / materiales avanzados (prioridad para Co/Li/Graphite/RE)
+  batteryChem: new Set(["Morocco","South Africa","Mozambique","Zimbabwe","Zambia"]),
+  // Puertos fuertes
+  portsStrong: new Set(["South Africa","Morocco","Mozambique","Kenya","Namibia","Egypt","Tanzania","Senegal","Ghana","Nigeria"])
 };
 
+// Cadenas “preset” de ejemplo (para el botón Recommended Chain)
 const presets = {
   "Metals (Cu/Co → Battery materials)": {
     resource:"Cobalt/Copper",
     from:["Democratic Republic of the Congo","Zambia"],
-    process:["Zambia","Morocco"],
+    process:["Zambia","Morocco","South Africa"],
     export:["South Africa","Morocco"]
   },
   "Bauxite → Aluminium": {
     resource:"Bauxite/Aluminium",
     from:["Guinea"],
-    process:["Mozambique"],
+    process:["Mozambique","South Africa"],
     export:["South Africa"]
   },
   "Crude → Refinery → Export": {
     resource:"Oil/Gas",
     from:["Nigeria","Angola","Libya"],
-    process:["Egypt","South Africa"],
-    export:["Morocco","South Africa"]
+    process:["Egypt","South Africa","Morocco","Algeria"],
+    export:["Morocco","South Africa","Egypt"]
   },
   "Cocoa → Chocolate": {
     resource:"Cocoa/Food",
-    from:["Côte d’Ivoire"],
-    process:["Ghana","South Africa"],
-    export:["South Africa"]
+    from:["Côte d’Ivoire","Ghana"],
+    process:["Côte d’Ivoire","Ghana","South Africa"],
+    export:["South Africa","Morocco"]
   }
 };
 
-// ---- 2) MAP INIT ----
+// ---- 2) MAP INIT + labels blancas ----
 const map = L.map('map', { zoomControl: true, minZoom: 2 }).setView([2, 20], 3.3);
 
 // Pane para etiquetas (por encima, sin capturar clics)
@@ -177,7 +238,9 @@ function layerCenter(name){
     'South Africa':{lat:-30.56,lng:22.94}, 'Morocco':{lat:31.8,lng:-7.09}, 'Mozambique':{lat:-18.67,lng:35.53},
     'Guinea':{lat:10.44,lng:-10.94}, 'Nigeria':{lat:9.08,lng:8.67}, 'Ghana':{lat:7.95,lng:-1.03},
     'Egypt':{lat:26.8,lng:30.8}, 'Algeria':{lat:28,lng:2.6}, 'Kenya':{lat:-0.02,lng:37.9},
-    'Namibia':{lat:-22.55,lng:17.07}, 'Senegal':{lat:14.5,lng:-14.4}, 'Angola':{lat:-12.3,lng:17.5}
+    'Namibia':{lat:-22.55,lng:17.07}, 'Senegal':{lat:14.5,lng:-14.4}, 'Angola':{lat:-12.3,lng:17.5},
+    'Morocco':{lat:31.8,lng:-7.09}, 'Zimbabwe':{lat:-19.0,lng:30.0}, 'Tanzania':{lat:-6.37,lng:34.89},
+    'Mali':{lat:17.6,lng:-3.99}, 'Sudan':{lat:15.6,lng:30.2}
   };
   return fallback[name] || map.getCenter();
 }
@@ -187,9 +250,9 @@ function distanceKM(a,b){
   return 2*R*Math.asin(Math.sqrt(s1));
 }
 function categoryColor(resource){
-  const r = resource.toLowerCase();
+  const r = (resource||'').toLowerCase();
   if(r.includes('oil')||r.includes('gas')||r.includes('crude')) return getVar('--OIL');
-  if(r.includes('baux')||r.includes('cobal')||r.includes('copper')||r.includes('plat')||r.includes('uran')||r.includes('gold')||r.includes('diam')) return getVar('--MET');
+  if(r.includes('baux')||r.includes('cobal')||r.includes('copper')||r.includes('chrom')||r.includes('uran')||r.includes('graph')||r.includes('lith')||r.includes('rare')||r.includes('gold')||r.includes('diam')) return getVar('--MET');
   if(r.includes('cocoa')||r.includes('coffee')||r.includes('cashew')||r.includes('agro')) return getVar('--AGR');
   if(r.includes('fert')||r.includes('phosph')) return getVar('--FERT');
   return '#94a3b8';
@@ -203,7 +266,7 @@ function stageLabel(s){
 }
 function isMobile(){ return window.matchMedia('(max-width: 900px)').matches; }
 
-// ---- 4) PORT COORDS (representative port per export country) ----
+// ---- 4) PORT COORDS (representative export port per country) ----
 const PORT_COORDS = {
   "South Africa": { name:"Durban Port", lat:-29.88, lng:31.05 },
   "Morocco":     { name:"Tanger Med",  lat:35.90,  lng:-5.50 },
@@ -257,7 +320,7 @@ async function loadAfrica(){
       countryLayers.set(display, layer);
       layer.on('click',()=>{
         renderSidebar(display, layer);
-        if(isMobile()) openSidebar();    // auto-abrir panel en móvil
+        if(isMobile()) openSidebar();
       });
       layer.on('mouseover',()=> layer.setStyle({weight:1.4}));
       layer.on('mouseout',()=> layer.setStyle({weight:1}));
@@ -266,7 +329,7 @@ async function loadAfrica(){
 
   map.fitBounds(africaLayer.getBounds(),{padding:[20,20]});
 
-  // Fill selectors y picker
+  // Fill selectors & picker
   populateSelectors();
   const picker = document.getElementById('countryPicker');
   const names = feats.map(f=>normalizeName(f.properties.name || f.properties.ADMIN || f.properties.NAME)).sort();
@@ -281,7 +344,7 @@ async function loadAfrica(){
     }
   });
 
-  // ✅ Auto-focus en Kenya (zoom + panel)
+  // ✅ Auto-focus en Kenya
   const kenyaLayer = countryLayers.get('Kenya');
   if (kenyaLayer) {
     map.fitBounds(kenyaLayer.getBounds(), { padding:[20,20] });
@@ -289,7 +352,6 @@ async function loadAfrica(){
     if(isMobile()) openSidebar();
   }
 
-  // invalidateSize cuando cambia el layout
   window.addEventListener('resize', debounce(()=> map.invalidateSize(), 150));
 }
 
@@ -307,7 +369,7 @@ function fallbackMarkers(){
   populateSelectors();
 }
 
-// ---- 7) SIDEBAR ----
+// ---- 7) SIDEBAR RENDER ----
 function renderSidebar(name, layer){
   const info = lookupCountry(name);
   const el = document.querySelector('#sidebar .panel-body');
@@ -330,42 +392,105 @@ function renderSidebar(name, layer){
   `;
 }
 
-// ---- 8) MATCH ENGINE ----
+// ---- 8) MATCH ENGINE 2.0 (Auto-Match si dejas Processing y Export en auto) ----
 function populateSelectors(){
-  const countries = Object.keys(resourceData).sort();
-  const resSet = new Set();
+  // Recursos base a partir del dataset + transición energética
+  const resSet = new Set(["Cobalt","Copper","Chromium","Uranium","Graphite","Lithium","Rare earths","Bauxite","Phosphates","Crude oil","Cocoa","Coffee","Gold","Diamonds"]);
   for(const v of Object.values(resourceData)) v.resources?.forEach(r=>resSet.add(r.name.split(' ')[0]));
-  const res = Array.from(resSet).sort();
-  document.getElementById('matchResource').innerHTML = res.map(x=>`<option>${x}</option>`).join('');
+  const resources = Array.from(resSet).sort();
+
+  const countries = Object.keys(resourceData).sort();
+
+  document.getElementById('matchResource').innerHTML = resources.map(x=>`<option>${x}</option>`).join('');
   document.getElementById('matchFrom').innerHTML     = countries.map(x=>`<option>${x}</option>`).join('');
-  document.getElementById('matchProcess').innerHTML  = countries.map(x=>`<option>${x}</option>`).join('');
-  document.getElementById('matchExport').innerHTML   = countries.map(x=>`<option>${x}</option>`).join('');
+  document.getElementById('matchProcess').innerHTML  = `<option value="">(auto)</option>` + countries.map(x=>`<option>${x}</option>`).join('');
+  document.getElementById('matchExport').innerHTML   = `<option value="">(auto)</option>` + countries.map(x=>`<option>${x}</option>`).join('');
 }
 
-async function drawRouteReal(aName, bName, cCountry, resource){
-  const A = layerCenter(aName);     // origin
-  const B = layerCenter(bName);     // processing
-  const port = PORT_COORDS[cCountry];
-  const C = port ? {lat:port.lat, lng:port.lng} : layerCenter(cCountry); // export endpoint
+function resourceKeyword(r){
+  const s = (r||'').toLowerCase();
+  if(s.includes('cobalt')) return 'cobalt';
+  if(s.includes('lith')) return 'lithium';
+  if(s.includes('graph')) return 'graphite';
+  if(s.includes('rare')) return 'rare';
+  if(s.includes('chrom')) return 'chromium';
+  if(s.includes('uran')) return 'uranium';
+  if(s.includes('baux')) return 'bauxite';
+  if(s.includes('phosph')) return 'phosphates';
+  if(s.includes('crude')||s.includes('oil')||s.includes('gas')) return 'oil';
+  if(s.includes('cocoa')) return 'cocoa';
+  if(s.includes('coffee')) return 'coffee';
+  if(s.includes('gold')) return 'gold';
+  if(s.includes('diamond')) return 'diamonds';
+  if(s.includes('copper')) return 'copper';
+  return 'generic';
+}
 
-  const color = categoryColor(resource);
+function candidatesFor(resourceKey){
+  const all = Object.keys(resourceData);
+  let procPref = all;
+  let portPref = all.filter(c=>capabilities.portsStrong.has(c));
+  // Prioridades por tipo
+  if(['cobalt','lithium','graphite','rare'].includes(resourceKey)){
+    procPref = all.filter(c=>capabilities.batteryChem.has(c) || capabilities.processing.has(c));
+  } else if(resourceKey==='oil'){
+    procPref = all.filter(c=>capabilities.refineriesOil.has(c) || capabilities.processing.has(c));
+  } else {
+    procPref = all.filter(c=>capabilities.processing.has(c));
+  }
+  if(portPref.length===0) portPref = all; // fallback
+  return {procPref, portPref};
+}
 
-  const r1 = await osrmRoute(A,B);
-  const pl1 = L.polyline(r1.coords,{color,weight:4,opacity:0.9}).addTo(map);
+async function bestMatch(fromCountry, resourceName){
+  const A = layerCenter(fromCountry);
+  // Si no se especifica recurso, toma el primero con etapa E
+  let r = resourceName;
+  if(!r){
+    const info = resourceData[fromCountry];
+    r = info?.resources?.find(x=>String(x.stage).startsWith('E'))?.name || info?.resources?.[0]?.name || 'Metals';
+  }
+  const key = resourceKeyword(r);
+  const { procPref, portPref } = candidatesFor(key);
 
-  const r2 = await osrmRoute(B,C);
-  const pl2 = L.polyline(r2.coords,{color,weight:4,opacity:0.9,dashArray:'6 6'}).addTo(map);
+  let best = null;
 
-  drawn.push(pl1,pl2);
+  for(const p of procPref){
+    if(p===fromCountry) continue;
+    const B = layerCenter(p);
+    for(const e of portPref){
+      const port = PORT_COORDS[e];
+      const C = port ? {lat:port.lat, lng:port.lng} : layerCenter(e);
 
-  const km = Math.round(r1.km + r2.km);
+      // Distancia estimada (rápido). Para decidir score uso gran-N, y luego OSRM al final.
+      const kmEst = distanceKM(A,B) + distanceKM(B,C);
 
-  const base = 0.12; // USD per t/km (heurístico)
-  const processFactor = capabilities.processing.has(bName) ? 0.9 : 1.1;
-  const portFactor = capabilities.portsStrong.has(cCountry) ? 0.85 : 1.05;
-  const cost = Math.round((km*base*processFactor*portFactor)*100)/100;
+      // Bonos por capacidad
+      let bonus = 0;
+      if(capabilities.processing.has(p)) bonus += 200;
+      if(capabilities.portsStrong.has(e)) bonus += 150;
+      if(key==='oil' && capabilities.refineriesOil.has(p)) bonus += 500;
+      if(['cobalt','lithium','graphite','rare'].includes(key) && capabilities.batteryChem.has(p)) bonus += 500;
 
-  return { km, cost, exportPort: port?.name || cCountry };
+      // Score final a minimizar (distancia penaliza; capacidades restan)
+      const score = kmEst*1.0 - bonus;
+
+      if(!best || score < best.score){
+        best = { p, e, score, kmEst };
+      }
+    }
+  }
+
+  // Si nada salió (muy raro), fallback obvio
+  if(!best){
+    const fallbackP = procPref[0] || fromCountry;
+    const fallbackE = portPref[0] || fromCountry;
+    best = { p: fallbackP, e: fallbackE, score: 1e12, kmEst: 99999 };
+  }
+
+  // Ahora sí, trazamos con OSRM y devolvemos métricas reales
+  const metrics = await drawRouteReal(fromCountry, best.p, best.e, r);
+  return { resource:r, process: best.p, exportTo: best.e, metrics };
 }
 
 function clearRoutes(){ drawn.splice(0).forEach(l=> map.removeLayer(l)); }
@@ -373,8 +498,12 @@ function clearRoutes(){ drawn.splice(0).forEach(l=> map.removeLayer(l)); }
 function showRouteCard({resource,from,process,exportTo,metrics}){
   const el = document.querySelector('#sidebar .panel-body');
   const gaps = [];
-  if(!capabilities.processing.has(process)) gaps.push('⚙️ Limited processing capacity');
+  // Diagnósticos / brechas
+  if(resourceKeyword(resource)==='oil' && !capabilities.refineriesOil.has(process)) gaps.push('🛢️ Limited refinery capacity for oil');
+  if(['cobalt','lithium','graphite','rare'].includes(resourceKeyword(resource)) && !capabilities.batteryChem.has(process)) gaps.push('🔋 Limited battery-chem capacity');
+  if(!capabilities.processing.has(process)) gaps.push('⚙️ Limited general processing capacity');
   if(!capabilities.portsStrong.has(exportTo)) gaps.push('⚓ Port infrastructure to reinforce');
+
   const html = `
     <div class="routeCard">
       <div class="h">Recommended Value Chain</div>
@@ -386,22 +515,35 @@ function showRouteCard({resource,from,process,exportTo,metrics}){
       ${gaps.length? `<div class="divider"></div><div class="small">Gaps: <ul>${gaps.map(g=>`<li>${g}</li>`).join('')}</ul></div>`: ''}
     </div>`;
   el.insertAdjacentHTML('afterbegin', html);
-  if(isMobile()) openSidebar(); // asegúrate de ver el resultado en móvil
+  if(isMobile()) openSidebar();
 }
 
 // ---- 9) UI EVENTS + Drawer logic ----
 document.getElementById('btnMatch').addEventListener('click', async ()=>{
   const btn = document.getElementById('btnMatch');
-  const r = document.getElementById('matchResource').value;
-  const f = document.getElementById('matchFrom').value;
-  const p = document.getElementById('matchProcess').value;
-  const e = document.getElementById('matchExport').value;
+  const r = document.getElementById('matchResource').value || '';
+  const f = document.getElementById('matchFrom').value || '';
+  let p = document.getElementById('matchProcess').value || '';
+  let e = document.getElementById('matchExport').value || '';
+
+  if(!f){
+    alert('Pick at least a "From country" to generate a match.');
+    return;
+  }
 
   btn.disabled = true; btn.textContent = 'Calculating…';
   try{
     clearRoutes();
-    const metrics = await drawRouteReal(f,p,e,r);
-    showRouteCard({resource:r,from:f,process:p,exportTo:e,metrics});
+    let result;
+    // Si process/export están en "(auto)" o vacíos -> calcular mejor combinación
+    if(!p || !e){
+      result = await bestMatch(f, r);
+    } else {
+      // Usuario fijó todo: usarlo tal cual
+      const metrics = await drawRouteReal(f,p,e,r || (resourceData[f]?.resources?.[0]?.name || 'Metals'));
+      result = { resource: r || 'Metals', process:p, exportTo:e, metrics };
+    }
+    showRouteCard({resource:result.resource, from:f, process:result.process, exportTo:result.exportTo, metrics:result.metrics});
   } finally {
     btn.disabled = false; btn.textContent = 'Generate Match';
   }
@@ -454,13 +596,12 @@ document.getElementById('colorMode').addEventListener('change', (e)=>{
   });
 });
 
-// Drawer controls
+// Drawer controls (definidos en index/styles responsivos)
 const drawer = document.getElementById('sidebar');
 const toggleBtn = document.getElementById('toggleSidebar');
 toggleBtn.addEventListener('click', ()=>{
   if(drawer.classList.contains('open')) closeSidebar(); else openSidebar();
 });
-
 function openSidebar(){
   drawer.classList.add('open');
   drawer.setAttribute('aria-hidden','false');
@@ -479,3 +620,35 @@ function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout
 
 // ---- 10) INIT ----
 loadAfrica();
+
+// ---- 11) drawRouteReal (usa OSRM + costo heurístico) ----
+async function drawRouteReal(aName, bName, cCountry, resource){
+  const A = layerCenter(aName);     // origin
+  const B = layerCenter(bName);     // processing
+  const port = PORT_COORDS[cCountry];
+  const C = port ? {lat:port.lat, lng:port.lng} : layerCenter(cCountry); // export endpoint
+
+  const color = categoryColor(resource);
+
+  // Segmento 1: A -> B via OSRM (fallback recta)
+  const r1 = await osrmRoute(A,B);
+  const pl1 = L.polyline(r1.coords,{color,weight:4,opacity:0.9}).addTo(map);
+
+  // Segmento 2: B -> C via OSRM (fallback recta, dashed)
+  const r2 = await osrmRoute(B,C);
+  const pl2 = L.polyline(r2.coords,{color,weight:4,opacity:0.9,dashArray:'6 6'}).addTo(map);
+
+  drawn.push(pl1,pl2);
+
+  const km = Math.round(r1.km + r2.km);
+
+  // Cost model (heurístico simple)
+  const base = 0.12; // USD per t/km
+  const key = resourceKeyword(resource);
+  const processBonus = (key==='oil' && capabilities.refineriesOil.has(bName)) || (['cobalt','lithium','graphite','rare'].includes(key) && capabilities.batteryChem.has(bName));
+  const processFactor = processBonus ? 0.85 : (capabilities.processing.has(bName) ? 0.9 : 1.1);
+  const portFactor = capabilities.portsStrong.has(cCountry) ? 0.85 : 1.05;
+  const cost = Math.round((km*base*processFactor*portFactor)*100)/100;
+
+  return { km, cost, exportPort: port?.name || cCountry };
+}
