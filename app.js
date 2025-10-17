@@ -126,7 +126,7 @@ const resourceData = {
     {name:"Coffee", stage:"E/P (limited)"},
     {name:"Mineral sands", stage:"E"}
   ]},
-  // Añadidos del PDF que faltaban en el dataset previo:
+  // Añadidos del PDF
   "Mali": { region:"West Africa", dominant:"E", resources:[
     {name:"Gold", stage:"E", notes:"Top export earner"},
     {name:"Cotton", stage:"E"},
@@ -134,22 +134,300 @@ const resourceData = {
   ]},
   "Sudan": { region:"North/East Africa", dominant:"E", resources:[
     {name:"Gold", stage:"E", notes:"Often refined/exported via SA/Egypt in example chains"}
-  ]}
+  ]},
+
+  // ==== Southern/West/Island packs ====
+  "Botswana": {
+    region: "Southern Africa",
+    dominant: "P",
+    resources: [
+      { name: "Diamonds", stage: "E/P", notes: "Cutting & polishing hub (with SA)" },
+      { name: "Beef/livestock", stage: "E/T" },
+      { name: "Soda ash/salt (Sua Pan)", stage: "E" }
+    ]
+  },
+  "Burkina Faso": {
+    region: "West Africa",
+    dominant: "E",
+    resources: [
+      { name: "Gold", stage: "E", notes: "Major export" },
+      { name: "Cotton", stage: "E/P (ginning)" }
+    ]
+  },
+  "Cabo Verde": {
+    region: "West Africa",
+    dominant: "T",
+    resources: [
+      { name: "Fisheries", stage: "E/T" },
+      { name: "Logistics/services (islands)", stage: "T" }
+    ]
+  },
+  "Guinea-Bissau": {
+    region: "West Africa",
+    dominant: "E",
+    resources: [
+      { name: "Cashew", stage: "E/P (light)" },
+      { name: "Fisheries", stage: "E/T" }
+    ]
+  },
+  "São Tomé and Príncipe": {
+    region: "Central Africa",
+    dominant: "E",
+    resources: [
+      { name: "Cocoa", stage: "E/P (light)" },
+      { name: "Fisheries", stage: "E/T" },
+      { name: "Offshore oil (prospects)", stage: "E (future)" }
+    ]
+  },
+  "Madagascar": {
+    region: "Southern Africa",
+    dominant: "E",
+    resources: [
+      { name: "Nickel/Cobalt (Ambatovy)", stage: "E/P (on-site processing)" },
+      { name: "Graphite/Chromite (various)", stage: "E" },
+      { name: "Vanilla/Cloves", stage: "E/T" }
+    ]
+  },
+  "Mauritius": {
+    region: "Southern Africa",
+    dominant: "P",
+    resources: [
+      { name: "Sugar & food processing", stage: "P/T" },
+      { name: "Textiles/garments", stage: "P/T" },
+      { name: "Services/logistics", stage: "T" }
+    ]
+  },
+  "Comoros": {
+    region: "Southern Africa",
+    dominant: "E",
+    resources: [
+      { name: "Cloves/Vanilla/Ylang-ylang", stage: "E/T" },
+      { name: "Fisheries", stage: "E/T" }
+    ]
+  },
+  "Seychelles": {
+    region: "Southern Africa",
+    dominant: "T",
+    resources: [
+      { name: "Fisheries (tuna hub)", stage: "E/T" },
+      { name: "Air/sea logistics (islands)", stage: "T" }
+    ]
+  },
+
+  // ==== West Africa (Coastal) ====
+  "Benin": {
+    region: "West Africa",
+    dominant: "P",
+    resources: [
+      { name: "Cotton", stage: "E/P", notes: "Ginning; growing textiles" },
+      { name: "Cashew nuts", stage: "E/P (shelling/packaging)" },
+      { name: "Port of Cotonou (logistics)", stage: "T" }
+    ]
+  },
+  "Togo": {
+    region: "West Africa",
+    dominant: "P",
+    resources: [
+      { name: "Phosphates", stage: "E/P (cement/clinker)" },
+      { name: "Cotton & cashew", stage: "E/P (limited)" },
+      { name: "Port of Lomé (hub)", stage: "T" }
+    ]
+  },
+  "Sierra Leone": {
+    region: "West Africa",
+    dominant: "E",
+    resources: [
+      { name: "Iron ore (Tonkolili)", stage: "E/T" },
+      { name: "Rutile/Ilmenite (HMS)", stage: "E" },
+      { name: "Alluvial diamonds & gold", stage: "E" },
+      { name: "Fisheries", stage: "T" }
+    ]
+  },
+  "Liberia": {
+    region: "West Africa",
+    dominant: "E",
+    resources: [
+      { name: "Iron ore", stage: "E/T (Monrovia/Buchanan)" },
+      { name: "Natural rubber & palm oil", stage: "P" },
+      { name: "Gold", stage: "E" }
+    ]
+  },
+  "The Gambia": {
+    region: "West Africa",
+    dominant: "T",
+    resources: [
+      { name: "Groundnuts/Sesame/Cashew", stage: "E/P (light)" },
+      { name: "Fisheries", stage: "E/T" },
+      { name: "Port of Banjul", stage: "T" }
+    ]
+  },
+  "Mauritania": {
+    region: "West Africa",
+    dominant: "T",
+    resources: [
+      { name: "Iron ore (SNIM)", stage: "E/T (Nouadhibou)" },
+      { name: "Gold & copper", stage: "E" },
+      { name: "Offshore gas (GTA w/ Senegal)", stage: "E/P (future)" },
+      { name: "Fisheries", stage: "T" }
+    ]
+  },
+
+  // ==== North Africa ====
+  "Tunisia": {
+    region: "North Africa",
+    dominant: "P",
+    resources: [
+      { name: "Phosphates (Gafsa)", stage: "E/P", notes: "Fertilizers & phosphoric acid; variable capacity" },
+      { name: "Olive oil & dates", stage: "P" },
+      { name: "Gas & crude (small scale)", stage: "E" },
+      { name: "Light manufacturing (harnesses/textiles)", stage: "P/T" }
+    ]
+  },
+  "Western Sahara": {
+    region: "North Africa",
+    dominant: "T",
+    resources: [
+      { name: "Phosphates (Bou Craa)", stage: "E/T (Atlantic exports)" },
+      { name: "Fisheries", stage: "T" }
+    ]
+  },
+
+  // ==== Central Africa (Coastal) ====
+  "Equatorial Guinea": {
+    region: "Central Africa",
+    dominant: "P",
+    resources: [
+      { name: "Crude oil", stage: "E" },
+      { name: "LNG (Punta Europa)", stage: "P/T" },
+      { name: "Tropical timber", stage: "E/T" }
+    ]
+  },
+  "Republic of the Congo": {
+    region: "Central Africa",
+    dominant: "T",
+    resources: [
+      { name: "Crude oil", stage: "E/T (Pointe-Noire)" },
+      { name: "Timber", stage: "E/T" },
+      { name: "Potash/Iron (projects)", stage: "E (under development)" }
+    ]
+  },
+
+  // ==== Central Africa (Interior) ====
+  "Central African Republic": {
+    region: "Central Africa",
+    dominant: "E",
+    resources: [
+      { name: "Alluvial diamonds & gold", stage: "E" },
+      { name: "Timber (via Cameroon)", stage: "E/T" },
+      { name: "Local processing", stage: "P (very limited)" }
+    ]
+  },
+  "Chad": {
+    region: "Central Africa",
+    dominant: "T",
+    resources: [
+      { name: "Crude oil (Doba)", stage: "E/T (pipeline to Sudan)" },
+      { name: "Livestock & gum arabic", stage: "E/T" },
+      { name: "Cotton", stage: "E/P (light)" }
+    ]
+  },
+
+  // ==== Horn of Africa ====
+  "Eritrea": {
+    region: "Horn/East Africa",
+    dominant: "E",
+    resources: [
+      { name: "Gold/Copper/Zinc (Bisha)", stage: "E" },
+      { name: "Potash (Colluli)", stage: "E (future)/P" },
+      { name: "Ports of Massawa & Assab", stage: "T" }
+    ]
+  },
+  "Somalia": {
+    region: "Horn/East Africa",
+    dominant: "T",
+    resources: [
+      { name: "Livestock exports (Berbera/Bosaso)", stage: "E/T" },
+      { name: "Fisheries", stage: "E/T" },
+      { name: "Frankincense/Myrrh; agriculture", stage: "E" },
+      { name: "Offshore oil exploration", stage: "E (future)" }
+    ]
+  },
+  "Djibouti": {
+    region: "Horn/East Africa",
+    dominant: "T",
+    resources: [
+      { name: "Regional port & rail hub (Ethiopia)", stage: "T" },
+      { name: "Salt (Lake Assal)", stage: "E" },
+      { name: "Geothermal energy", stage: "E/P" }
+    ]
+  },
+
+  // ==== East Africa (Interior) ====
+  "Rwanda": {
+    region: "Horn/East Africa",
+    dominant: "P",
+    resources: [
+      { name: "3Ts (Sn/Ta/W) & gold", stage: "E/P (limited smelting)" },
+      { name: "Tea & coffee", stage: "P/T (grading, light roasting)" },
+      { name: "Regional logistics/services", stage: "T" }
+    ]
+  },
+  "Burundi": {
+    region: "Horn/East Africa",
+    dominant: "E",
+    resources: [
+      { name: "Coffee & tea", stage: "E/P (processing/packaging)" },
+      { name: "Nickel (potential) & artisanal gold", stage: "E" }
+    ]
+  },
+  "Malawi": {
+    region: "Horn/East Africa",
+    dominant: "E",
+    resources: [
+      { name: "Tobacco, tea, sugar", stage: "P" },
+      { name: "Uranium (Kayelekera)", stage: "E (intermittent)" },
+      { name: "Rare earths (Songwe Hill) & gemstones", stage: "E (under development)" }
+    ]
+  },
+  "South Sudan": {
+    region: "Horn/East Africa",
+    dominant: "T",
+    resources: [
+      { name: "Crude oil (main fiscal source)", stage: "E/T (pipelines to Port Sudan)" },
+      { name: "Livestock & gum arabic", stage: "E/T" }
+    ]
+  },
+
+  // ==== Southern Africa (Interior) ====
+  "Lesotho": {
+    region: "Southern Africa",
+    dominant: "P",
+    resources: [
+      { name: "Diamonds (Letšeng, others)", stage: "E/T (via SA)" },
+      { name: "Textiles/Garments (EPZ)", stage: "P/T" },
+      { name: "Water & hydropower exports (LHWP)", stage: "T" }
+    ]
+  },
+  "Eswatini": {
+    region: "Southern Africa",
+    dominant: "P",
+    resources: [
+      { name: "Sugar (refining & industries)", stage: "P" },
+      { name: "Beverage concentrates, citrus, timber", stage: "P/T" },
+      { name: "Coal & light manufacturing", stage: "P" }
+    ]
+  }
 };
 
 // Capacidades (heurísticas)
 const capabilities = {
-  // Países con industria de procesamiento diversificada
   processing: new Set(["South Africa","Zambia","Morocco","Egypt","Algeria","Mozambique","Botswana","Côte d’Ivoire","Ghana"]),
-  // Refinerías de petróleo/derivados destacables
   refineriesOil: new Set(["Egypt","South Africa","Morocco","Algeria","Nigeria"]),
-  // Químicos de baterías / materiales avanzados (prioridad para Co/Li/Graphite/RE)
   batteryChem: new Set(["Morocco","South Africa","Mozambique","Zimbabwe","Zambia"]),
-  // Puertos fuertes
   portsStrong: new Set(["South Africa","Morocco","Mozambique","Kenya","Namibia","Egypt","Tanzania","Senegal","Ghana","Nigeria"])
 };
 
-// Cadenas “preset” de ejemplo (para el botón Recommended Chain)
+// Cadenas “preset” de ejemplo
 const presets = {
   "Metals (Cu/Co → Battery materials)": {
     resource:"Cobalt/Copper",
@@ -214,15 +492,23 @@ function regionColor(region){
   };
   return palette[region] || '#94a3b8';
 }
+
+// 👇 Normalizador reforzado para casar nombres del GeoJSON con resourceData
 function normalizeName(s){
   return String(s)
-    .replace('Republic of ','')
-    .replace('Democratic Republic of the Congo','Democratic Republic of the Congo')
-    .replace("Cote d'Ivoire","Côte d’Ivoire")
-    .replace('Cape Verde','Cabo Verde')
-    .replace('Sao Tome and Principe','São Tomé and Príncipe')
+    .replace(/\u00A0/g,' ') // NBSP -> space
+    .replace(/^Congo$/,'Republic of the Congo')
+    .replace(/^Congo DR|^DR Congo$/,'Democratic Republic of the Congo')
+    .replace(/^Congo, The Democratic Republic of the$/,'Democratic Republic of the Congo')
+    .replace(/^Ivory Coast$/,'Côte d’Ivoire')
+    .replace(/^Cote d'Ivoire$/,'Côte d’Ivoire')
+    .replace(/^Sao Tome and Principe$/,'São Tomé and Príncipe')
+    .replace(/^Cape Verde$/,'Cabo Verde')
+    .replace(/^Swaziland$/,'Eswatini')
+    .replace(/^Republic of\s+/,'') // prefijo común
     .trim();
 }
+
 function lookupCountry(name){
   const candidates = [name, normalizeName(name)];
   for(const k of Object.keys(resourceData)){
@@ -239,7 +525,7 @@ function layerCenter(name){
     'Guinea':{lat:10.44,lng:-10.94}, 'Nigeria':{lat:9.08,lng:8.67}, 'Ghana':{lat:7.95,lng:-1.03},
     'Egypt':{lat:26.8,lng:30.8}, 'Algeria':{lat:28,lng:2.6}, 'Kenya':{lat:-0.02,lng:37.9},
     'Namibia':{lat:-22.55,lng:17.07}, 'Senegal':{lat:14.5,lng:-14.4}, 'Angola':{lat:-12.3,lng:17.5},
-    'Morocco':{lat:31.8,lng:-7.09}, 'Zimbabwe':{lat:-19.0,lng:30.0}, 'Tanzania':{lat:-6.37,lng:34.89},
+    'Zimbabwe':{lat:-19.0,lng:30.0}, 'Tanzania':{lat:-6.37,lng:34.89},
     'Mali':{lat:17.6,lng:-3.99}, 'Sudan':{lat:15.6,lng:30.2}
   };
   return fallback[name] || map.getCenter();
@@ -379,7 +665,7 @@ function renderSidebar(name, layer){
     return `<span class="chip">${r.name} <span class="subtle">(${label})</span></span>`;
   }).join('') : '';
   el.innerHTML = `
-    <div class="h">${name}</div>
+    <div class="h">${normalizeName(name)}</div>
     ${info? `<div class="chips">${resList}</div>`: '<div class="subtle">No demo data yet — add it in <code>resourceData</code>.</div>'}
     <div class="kv">
       <div>Dominant stage</div><div><span class="pill"><span style="width:10px;height:10px;background:${info?stageColor(info.dominant):'#64748b'};display:inline-block;border-radius:3px"></span> ${info?stageLabel(info.dominant):'N/A'}</span></div>
@@ -394,7 +680,6 @@ function renderSidebar(name, layer){
 
 // ---- 8) MATCH ENGINE 2.0 (Auto-Match si dejas Processing y Export en auto) ----
 function populateSelectors(){
-  // Recursos base a partir del dataset + transición energética
   const resSet = new Set(["Cobalt","Copper","Chromium","Uranium","Graphite","Lithium","Rare earths","Bauxite","Phosphates","Crude oil","Cocoa","Coffee","Gold","Diamonds"]);
   for(const v of Object.values(resourceData)) v.resources?.forEach(r=>resSet.add(r.name.split(' ')[0]));
   const resources = Array.from(resSet).sort();
@@ -430,7 +715,6 @@ function candidatesFor(resourceKey){
   const all = Object.keys(resourceData);
   let procPref = all;
   let portPref = all.filter(c=>capabilities.portsStrong.has(c));
-  // Prioridades por tipo
   if(['cobalt','lithium','graphite','rare'].includes(resourceKey)){
     procPref = all.filter(c=>capabilities.batteryChem.has(c) || capabilities.processing.has(c));
   } else if(resourceKey==='oil'){
@@ -444,7 +728,6 @@ function candidatesFor(resourceKey){
 
 async function bestMatch(fromCountry, resourceName){
   const A = layerCenter(fromCountry);
-  // Si no se especifica recurso, toma el primero con etapa E
   let r = resourceName;
   if(!r){
     const info = resourceData[fromCountry];
@@ -462,17 +745,14 @@ async function bestMatch(fromCountry, resourceName){
       const port = PORT_COORDS[e];
       const C = port ? {lat:port.lat, lng:port.lng} : layerCenter(e);
 
-      // Distancia estimada (rápido). Para decidir score uso gran-N, y luego OSRM al final.
       const kmEst = distanceKM(A,B) + distanceKM(B,C);
 
-      // Bonos por capacidad
       let bonus = 0;
       if(capabilities.processing.has(p)) bonus += 200;
       if(capabilities.portsStrong.has(e)) bonus += 150;
       if(key==='oil' && capabilities.refineriesOil.has(p)) bonus += 500;
       if(['cobalt','lithium','graphite','rare'].includes(key) && capabilities.batteryChem.has(p)) bonus += 500;
 
-      // Score final a minimizar (distancia penaliza; capacidades restan)
       const score = kmEst*1.0 - bonus;
 
       if(!best || score < best.score){
@@ -481,14 +761,12 @@ async function bestMatch(fromCountry, resourceName){
     }
   }
 
-  // Si nada salió (muy raro), fallback obvio
   if(!best){
     const fallbackP = procPref[0] || fromCountry;
     const fallbackE = portPref[0] || fromCountry;
     best = { p: fallbackP, e: fallbackE, score: 1e12, kmEst: 99999 };
   }
 
-  // Ahora sí, trazamos con OSRM y devolvemos métricas reales
   const metrics = await drawRouteReal(fromCountry, best.p, best.e, r);
   return { resource:r, process: best.p, exportTo: best.e, metrics };
 }
@@ -498,7 +776,6 @@ function clearRoutes(){ drawn.splice(0).forEach(l=> map.removeLayer(l)); }
 function showRouteCard({resource,from,process,exportTo,metrics}){
   const el = document.querySelector('#sidebar .panel-body');
   const gaps = [];
-  // Diagnósticos / brechas
   if(resourceKeyword(resource)==='oil' && !capabilities.refineriesOil.has(process)) gaps.push('🛢️ Limited refinery capacity for oil');
   if(['cobalt','lithium','graphite','rare'].includes(resourceKeyword(resource)) && !capabilities.batteryChem.has(process)) gaps.push('🔋 Limited battery-chem capacity');
   if(!capabilities.processing.has(process)) gaps.push('⚙️ Limited general processing capacity');
@@ -535,11 +812,9 @@ document.getElementById('btnMatch').addEventListener('click', async ()=>{
   try{
     clearRoutes();
     let result;
-    // Si process/export están en "(auto)" o vacíos -> calcular mejor combinación
     if(!p || !e){
       result = await bestMatch(f, r);
     } else {
-      // Usuario fijó todo: usarlo tal cual
       const metrics = await drawRouteReal(f,p,e,r || (resourceData[f]?.resources?.[0]?.name || 'Metals'));
       result = { resource: r || 'Metals', process:p, exportTo:e, metrics };
     }
@@ -596,7 +871,7 @@ document.getElementById('colorMode').addEventListener('change', (e)=>{
   });
 });
 
-// Drawer controls (definidos en index/styles responsivos)
+// Drawer controls
 const drawer = document.getElementById('sidebar');
 const toggleBtn = document.getElementById('toggleSidebar');
 toggleBtn.addEventListener('click', ()=>{

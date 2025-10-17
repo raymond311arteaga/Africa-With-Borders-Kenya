@@ -17,17 +17,26 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <noscript>
+    <div style="padding:12px;background:#fee2e2;color:#7f1d1d;text-align:center">
+      This application requires JavaScript to run.
+    </div>
+  </noscript>
+
   <header>
     <div class="title">
       <button id="toggleSidebar" aria-controls="sidebar" aria-expanded="false" title="Open panel">☰</button>
       <span>🗺️</span>
       <span>Africa With Borders Kenya — Interactive Value Chains</span>
     </div>
+
     <div class="row header-controls">
       <select id="countryPicker" aria-label="Pick a country">
         <option value="">Pick a country…</option>
       </select>
-      <input id="search" placeholder="Search country… (e.g., Nigeria)" aria-label="Search country"/>
+
+      <input id="search" placeholder="Search country… (e.g., Nigeria)" aria-label="Search country" inputmode="search"/>
+
       <select id="colorMode" aria-label="Color mode">
         <option value="stage">Color by dominant stage</option>
         <option value="region">Color by subregion</option>
@@ -35,7 +44,7 @@
     </div>
   </header>
 
-  <div id="app">
+  <main id="app">
     <div id="map" role="application" aria-label="Interactive map of Africa"></div>
 
     <aside id="sidebar" aria-label="Information panel" aria-hidden="true">
@@ -66,7 +75,7 @@
         </div>
       </div>
 
-      <div class="panel scroll panel-body">
+      <div class="panel scroll panel-body" role="status" aria-live="polite">
         <div class="subtle">Click a country to view details…</div>
       </div>
 
@@ -76,16 +85,17 @@
         </span>
       </footer>
     </aside>
-  </div>
+  </main>
 
   <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
+    defer
   ></script>
 
   <!-- App logic -->
-  <script src="./app.js"></script>
+  <script src="./app.js" defer></script>
 </body>
 </html>
